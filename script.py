@@ -7,7 +7,7 @@ import time
 import pytz
 
 # BME280 sensor address (default address)
-address = 0x76
+address = 0x77
 
 # Initialize I2C bus
 bus = smbus2.SMBus(1)
@@ -54,7 +54,7 @@ while running:
         # Save time, date, temperature, humidity, and pressure in .txt file
         file.write(timestamp_tz.strftime('%H:%M:%S %d/%m/%Y') + ', {:.2f}, {:.2f}, {:.2f}, {:.2f}\n'.format(temperature_celsius, temperature_fahrenheit, humidity, pressure))
 
-        time.sleep(10)
+        time.sleep(1)
 
     except KeyboardInterrupt:
         print('Program stopped')
