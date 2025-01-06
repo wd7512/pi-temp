@@ -1,31 +1,31 @@
-import requests
-import time
+from meteostat import Point, Hourly, Daily
+import pandas as pd
+from datetime import datetime
 
-# Define the required parameters
-api_key = r"EYpogGibFrIWHqNCgPwQAuBxypYHNbXk"
-latitude = 40.7128  # Example latitude (New York City)
-longitude = -74.0060  # Example longitude (New York City)
-start_time = int(time.time() - 3600)  # 1 hour ago
-end_time = int(time.time())  # Current timestamp
+def get_weather_data(lat, lon, alt, start_date, end_date, granularity="daily"):
+    """
+    Fetch historical weather data for a given location and time range.
 
-# NOAA API for historical weather data (1-hour window)
-url = (
-    f"https://www.ncei.noaa.gov/cdo-web/api/v2/data?"
-    f"dataset=GHCND&"
-    f"startDate={time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(start_time))}&"
-    f"endDate={time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(end_time))}&"
-    f"stations=USW00014739&"  # Station ID (use the relevant station ID)
-    f"limit=1000&"
-    f"format=JSON"
-)
+    Parameters:
+        lat (float): Latitude of the location.
+        lon (float): Longitude of the location.
+        alt (float): Altitude of the location in meters.
+        start_date (datetime): Start date for the data.
+        end_date (datetime): End date for the data.
+        granularity (str): Granularity of the data ('daily', 'hourly', 'minute').
 
-# Make the API request
-response = requests.get(url, headers={'Token': api_key})
+    Returns:
+        pd.DataFrame: DataFrame containing the requested weather data.
+    """
+    # Define location
+    location = Point(lat, lon, alt)
 
-# Check for response
-if response.status_code == 200:
-    data = response.json()
-    for entry in data['results']:
-        print(f"Time: {entry['date']} | Temperature: {entry['value']}°F")
-else:
-    print(f"Error: {response.status_code}, {response.text}")
+    # Select granularity
+    if granularity == "daily":
+        data = Daily(location, start_date, end_date).fetch()
+    elif granularity == "hourly":
+        data = Hourly(location, start_date, end_date).fetch()
+    else:
+        raise ValueError("Unsupported granularity. Choose 'daily' or 'hourly'.")
+
+    return pd.DataFrame(data)
