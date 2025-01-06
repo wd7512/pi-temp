@@ -13,7 +13,7 @@ def upload_sensor_data(timestamp, temp_c, humidity, pressure):
         "pressure": pressure
     }
     try:
-        t = timestamp.strftime("%Y-%m-%d %H:%M")
+        t = timestamp.strftime("%Y/%m/%d/%H:%M")
         db.collection('BME280Collection').document(t).set(data)
         print("Data uploaded successfully!", t, data)
     except Exception as e:
