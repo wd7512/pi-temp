@@ -37,6 +37,8 @@ else:
     df = pd.read_csv("BME280_data.csv", index_col=0)
     df.index = pd.to_datetime(df.index)
 
+print(df.iloc[-1])
+
 df = df[df.index.year > 2024]
 
 ox = (51.745937862265606, -1.2318304746100621)
@@ -58,7 +60,7 @@ fig = sp.make_subplots(
 
 # Define y-axis limits for each chart
 y_limits = [
-    (0, 40),  # First plot: °C
+    (-5, 30),  # First plot: °C
     (0, 100),                          # Second plot: %
     (950,1050)  # Third plot: Kpa
 ]
@@ -90,7 +92,7 @@ for idx, col in enumerate(df.columns, start=1):
     )
 
 # Set a consistent x-axis range for all columns (shared_xaxes ensures bottom rows are synced)
-x_range = [df.index[-1] - pd.Timedelta("1h"), df.index[-1]]
+x_range = [df.index[-1] - pd.Timedelta("24h"), df.index[-1]]
 for idx in range(1, len(df.columns) + 1):
     fig.update_xaxes(range=x_range, row=1, col=idx)
 
@@ -104,4 +106,7 @@ fig.update_layout(
 
 # Display the interactive plot
 pio.show(fig)
+
+# fig.write_html("templates/dashboard.html")
+
 
